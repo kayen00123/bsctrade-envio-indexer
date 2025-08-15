@@ -1,0 +1,141 @@
+"""
+BSCTrade Token Launchpad Envio Schema
+Converted from The Graph subgraph for better performance
+"""
+
+type Token {
+  "Token contract address"
+  id: ID!
+  
+  "Basic token info"
+  address: String!
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigInt!
+  
+  "Price and market data"
+  currentPrice: BigDecimal!
+  priceChange24h: BigDecimal!
+  volume24h: BigDecimal!
+  volumeUSD24h: BigDecimal!
+  marketCap: BigDecimal!
+  
+  "Liquidity data"
+  reserveToken: BigInt!
+  reserveBNB: BigInt!
+  liquidity: BigDecimal!
+  
+  "Launch info"
+  creator: User!
+  launchedAt: BigInt!
+  isActive: Boolean!
+  ammPoolAddress: String
+  
+  "Counters"
+  transactionCount: BigInt!
+  holderCount: BigInt!
+  
+  "Relations"
+  transactions: [Transaction!]! @derivedFrom(field: "token")
+  priceHistory: [PricePoint!]! @derivedFrom(field: "token")
+  
+  "Timestamps"
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Transaction {
+  "Transaction hash + log index"
+  id: ID!
+  
+  "Transaction details"
+  hash: String!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  
+  "Token reference"
+  token: Token!
+  
+  "User and amounts"
+  user: User!
+  txType: TransactionType!
+  tokenAmount: BigInt!
+  bnbAmount: BigInt!
+  tokenAmountUSD: BigDecimal!
+  bnbAmountUSD: BigDecimal!
+  
+  "Price at transaction"
+  priceUSD: BigDecimal!
+  priceBNB: BigDecimal!
+  
+  "New fields for better tracking"
+  fromToken: BigInt!
+  toToken: BigInt!
+  fromAmount: BigInt!
+  toAmount: BigInt!
+  fromAmountUSD: BigDecimal!
+  toAmountUSD: BigDecimal!
+}
+
+type PricePoint {
+  "Token address + timestamp (hourly)"
+  id: ID!
+  
+  "Token reference"
+  token: Token!
+  
+  "OHLCV data"
+  timestamp: BigInt!
+  openPrice: BigDecimal!
+  highPrice: BigDecimal!
+  lowPrice: BigDecimal!
+  closePrice: BigDecimal!
+  volume: BigDecimal!
+  volumeUSD: BigDecimal!
+}
+
+type User {
+  "User wallet address"
+  id: ID!
+  
+  "User stats"
+  totalTransactions: BigInt!
+  totalVolumeUSD: BigDecimal!
+  tokensCreated: BigInt!
+  tokensTraded: BigInt!
+  
+  "Relations"
+  transactions: [Transaction!]! @derivedFrom(field: "user")
+  createdTokens: [Token!]! @derivedFrom(field: "creator")
+  
+  "Timestamps"
+  firstTransactionAt: BigInt!
+  lastTransactionAt: BigInt!
+}
+
+type LaunchpadStats {
+  "Singleton entity (id = '1')"
+  id: ID!
+  
+  "Platform metrics"
+  totalTokens: BigInt!
+  totalTransactions: BigInt!
+  totalVolumeUSD: BigDecimal!
+  totalUsers: BigInt!
+  
+  "Daily metrics"
+  tokensToday: BigInt!
+  volumeToday: BigDecimal!
+  transactionsToday: BigInt!
+  
+  "Timestamps"
+  lastUpdated: BigInt!
+}
+
+enum TransactionType {
+  BUY
+  SELL
+  LAUNCH
+  REGISTER
+}
