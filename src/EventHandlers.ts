@@ -1,7 +1,9 @@
 /*
  * BSCTrade Token Launchpad Envio Event Handlers
- * Fixed with Envio's BigNumber and proper enum types
+ * Debug version to ensure handlers are properly registered
  */
+
+console.log("🔥 EventHandlers.ts loaded - handlers should be available");
 
 import {
   TokenLauncher_TokenLaunched_event,

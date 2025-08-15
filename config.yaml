@@ -4,9 +4,9 @@ description: BSCTrade Token Launchpad Indexer
 
 networks:
   - id: 56 # BSC Mainnet
-    start_block: 57432400
+    start_block: 40000000
     rpc_config:
-      url: https://bsc-dataseed1.bnbchain.org
+      url: https://bsc-dataseed.bnbchain.org
     contracts:
       - name: TokenLauncher
         address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
