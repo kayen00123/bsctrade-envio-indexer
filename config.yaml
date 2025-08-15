@@ -13,7 +13,9 @@ networks:
         handler: src/EventHandlers.ts
         events:
           - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
+            handler: "TokenLauncher_TokenLaunched_handler"
           - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
+            handler: "TokenLauncher_ExternalTokenRegistered_handler"
 
       # AMM Pool Events (template address - we'll track all instances)
       - name: AMMPool
@@ -21,8 +23,11 @@ networks:
         handler: src/EventHandlers.ts
         events:
           - event: "TokenPurchased(address indexed buyer, uint256 tokenAmount, uint256 bnbAmount)"
+            handler: "AMMPool_TokenPurchased_handler"
           - event: "TokenSold(address indexed seller, uint256 tokenAmount, uint256 bnbAmount)"
+            handler: "AMMPool_TokenSold_handler"
           - event: "ReservesSynced(uint256 reserveToken, uint256 reserveBNB)"
+            handler: "AMMPool_ReservesSynced_handler"
 
       # Launch Token Template (for individual token contracts)
       - name: LaunchToken
@@ -30,7 +35,9 @@ networks:
         handler: src/EventHandlers.ts
         events:
           - event: "Transfer(address indexed from, address indexed to, uint256 value)"
+            handler: "LaunchToken_Transfer_handler"
           - event: "Approval(address indexed owner, address indexed spender, uint256 value)"
+            handler: "LaunchToken_Approval_handler"
 
 # Enable unordered multichain mode for better performance
 unordered_multichain_mode: true
