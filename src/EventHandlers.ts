@@ -1,6 +1,6 @@
 /*
  * BSCTrade Token Launchpad Envio Event Handlers
- * Minimal working version - just TokenLauncher events
+ * Fixed with proper BigNumber types for all decimal fields
  */
 
 import {
@@ -9,10 +9,23 @@ import {
   handlerContext,
 } from "../generated/src/Types.gen";
 
-// Constants
+// Import BigNumber from ethers (should be available in Envio)
+import { BigNumber } from "ethers";
+
+// Constants with proper BigNumber types
 const ZERO_BI = 0n;
 const ONE_BI = 1n;
-const ZERO_BD = "0";
+const ZERO_BD = BigNumber.from(0); // Proper BigNumber zero
+
+// Helper to create BigNumber from string or number
+function toBigNumber(value: string | number | bigint): typeof BigNumber {
+  return BigNumber.from(value.toString());
+}
+
+// Helper to convert bigint to BigNumber with decimals
+function bigIntToBigNumber(value: bigint, decimals: number = 18): typeof BigNumber {
+  return BigNumber.from(value.toString());
+}
 
 // Token Launched Handler
 export const TokenLauncher_TokenLaunched_handler = async ({ 
@@ -26,13 +39,13 @@ export const TokenLauncher_TokenLaunched_handler = async ({
   
   console.log(`🚀 Token Launched: ${name} (${symbol}) at ${tokenAddress}`);
   
-  // Create user
+  // Create user with proper BigNumber types
   let user = await context.User.get(creator);
   if (!user) {
     const newUser = {
       id: creator,
       totalTransactions: ZERO_BI,
-      totalVolumeUSD: ZERO_BD,
+      totalVolumeUSD: ZERO_BD, // BigNumber instead of string
       tokensCreated: ONE_BI,
       tokensTraded: ZERO_BI,
       firstTransactionAt: BigInt(event.block.timestamp),
@@ -48,7 +61,7 @@ export const TokenLauncher_TokenLaunched_handler = async ({
     context.User.set(updatedUser);
   }
   
-  // Create token
+  // Create token with proper BigNumber types
   const token = {
     id: tokenAddress.toLowerCase(),
     address: tokenAddress.toLowerCase(),
@@ -56,14 +69,14 @@ export const TokenLauncher_TokenLaunched_handler = async ({
     symbol: symbol,
     decimals: 18,
     totalSupply: totalSupply,
-    currentPrice: ZERO_BD,
-    priceChange24h: ZERO_BD,
-    volume24h: ZERO_BD,
-    volumeUSD24h: ZERO_BD,
-    marketCap: ZERO_BD,
+    currentPrice: ZERO_BD,        // BigNumber
+    priceChange24h: ZERO_BD,      // BigNumber
+    volume24h: ZERO_BD,           // BigNumber
+    volumeUSD24h: ZERO_BD,        // BigNumber
+    marketCap: ZERO_BD,           // BigNumber
     reserveToken: ZERO_BI,
     reserveBNB: ZERO_BI,
-    liquidity: ZERO_BD,
+    liquidity: ZERO_BD,           // BigNumber
     creator_id: creator,
     launchedAt: BigInt(event.block.timestamp),
     isActive: true,
@@ -76,10 +89,10 @@ export const TokenLauncher_TokenLaunched_handler = async ({
   
   context.Token.set(token);
   
-  // Create transaction
+  // Create transaction with proper BigNumber types
   const transaction = {
     id: `${tokenAddress.toLowerCase()}-${event.block.timestamp}-${event.logIndex}`,
-    hash: "0x", // Placeholder
+    hash: "0x", // String is correct for hash
     blockNumber: BigInt(event.block.number),
     timestamp: BigInt(event.block.timestamp),
     token_id: tokenAddress.toLowerCase(),
@@ -87,31 +100,31 @@ export const TokenLauncher_TokenLaunched_handler = async ({
     txType: "LAUNCH",
     tokenAmount: totalSupply,
     bnbAmount: ZERO_BI,
-    tokenAmountUSD: ZERO_BD,
-    bnbAmountUSD: ZERO_BD,
-    priceUSD: ZERO_BD,
-    priceBNB: ZERO_BD,
+    tokenAmountUSD: ZERO_BD,      // BigNumber
+    bnbAmountUSD: ZERO_BD,        // BigNumber
+    priceUSD: ZERO_BD,            // BigNumber
+    priceBNB: ZERO_BD,            // BigNumber
     fromToken: ZERO_BI,
     toToken: totalSupply,
     fromAmount: ZERO_BI,
     toAmount: totalSupply,
-    fromAmountUSD: ZERO_BD,
-    toAmountUSD: ZERO_BD,
+    fromAmountUSD: ZERO_BD,       // BigNumber
+    toAmountUSD: ZERO_BD,         // BigNumber
   };
   
   context.Transaction.set(transaction);
   
-  // Update platform stats
+  // Update platform stats with proper BigNumber types
   let stats = await context.LaunchpadStats.get("1");
   if (!stats) {
     const newStats = {
       id: "1",
       totalTokens: ONE_BI,
       totalTransactions: ONE_BI,
-      totalVolumeUSD: ZERO_BD,
+      totalVolumeUSD: ZERO_BD,      // BigNumber
       totalUsers: ONE_BI,
       tokensToday: ONE_BI,
-      volumeToday: ZERO_BD,
+      volumeToday: ZERO_BD,         // BigNumber
       transactionsToday: ONE_BI,
       lastUpdated: BigInt(event.block.timestamp),
     };
@@ -141,13 +154,13 @@ export const TokenLauncher_ExternalTokenRegistered_handler = async ({
   
   console.log(`📝 External Token Registered: ${name} (${symbol})`);
   
-  // Create user
+  // Create user with proper BigNumber types
   let user = await context.User.get(registrar);
   if (!user) {
     const newUser = {
       id: registrar,
       totalTransactions: ZERO_BI,
-      totalVolumeUSD: ZERO_BD,
+      totalVolumeUSD: ZERO_BD,      // BigNumber
       tokensCreated: ONE_BI,
       tokensTraded: ZERO_BI,
       firstTransactionAt: BigInt(event.block.timestamp),
@@ -163,7 +176,7 @@ export const TokenLauncher_ExternalTokenRegistered_handler = async ({
     context.User.set(updatedUser);
   }
   
-  // Create external token
+  // Create external token with proper BigNumber types
   const token = {
     id: tokenAddress.toLowerCase(),
     address: tokenAddress.toLowerCase(),
@@ -171,14 +184,14 @@ export const TokenLauncher_ExternalTokenRegistered_handler = async ({
     symbol: symbol,
     decimals: 18,
     totalSupply: ZERO_BI,
-    currentPrice: ZERO_BD,
-    priceChange24h: ZERO_BD,
-    volume24h: ZERO_BD,
-    volumeUSD24h: ZERO_BD,
-    marketCap: ZERO_BD,
+    currentPrice: ZERO_BD,        // BigNumber
+    priceChange24h: ZERO_BD,      // BigNumber
+    volume24h: ZERO_BD,           // BigNumber
+    volumeUSD24h: ZERO_BD,        // BigNumber
+    marketCap: ZERO_BD,           // BigNumber
     reserveToken: ZERO_BI,
     reserveBNB: ZERO_BI,
-    liquidity: ZERO_BD,
+    liquidity: ZERO_BD,           // BigNumber
     creator_id: registrar,
     launchedAt: BigInt(event.block.timestamp),
     isActive: true,
