@@ -11,9 +11,10 @@ networks:
       - name: TokenLauncher
         address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
         abi_file_path: ./abis/TokenLauncher.json
+        handler: src/EventHandlers.ts
         events:
           - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
           - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
 
-# Basic configuration - no optimizations for now
+# Basic configuration
 unordered_multichain_mode: false
