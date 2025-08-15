@@ -3,7 +3,7 @@ name: bsc-trade-indexer
 description: BSCTrade Token Launchpad Indexer - High Performance Blockchain Data Indexing
 networks:
   - id: 56 # BSC Mainnet (where your contracts actually are!)
-    start_block: 43000000 # Recent block for mainnet
+    start_block: 57432438 # Exact block where TokenLauncher was deployed
     rpc_config:
       url: https://bsc-dataseed1.bnbchain.org
     contracts:
