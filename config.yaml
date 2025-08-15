@@ -2,16 +2,14 @@
 name: bsc-trade-indexer
 description: BSCTrade Token Launchpad Indexer
 
-# Use wildcard mode to index events from any contract
+# Define events normally - wildcard is enabled in handler code
 contracts:
   - name: TokenLauncher
     abi_file_path: ./abis/TokenLauncher.json
     handler: ./src/Handlers.ts
     events:
       - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
-        wildcard: true
       - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
-        wildcard: true
 
 networks:
   - id: 56 # BSC Mainnet

@@ -1,12 +1,23 @@
 /*
- * Main Handler File - Imports and exports all event handlers
- * This is the file referenced in config.yaml
+ * Main Handler File - Wildcard mode enabled
+ * This enables indexing events from ANY contract on BSC
  */
 
-// Import all handlers from EventHandlers.ts
-export {
+import {
   TokenLauncher_TokenLaunched_handler,
   TokenLauncher_ExternalTokenRegistered_handler
 } from './EventHandlers';
 
-console.log("🔥 Main Handlers.ts loaded - all handlers exported");
+console.log("🔥 Main Handlers.ts loaded - wildcard mode enabled");
+
+// Register handlers with wildcard mode
+export const TokenLauncher = {
+  TokenLaunched: {
+    handler: TokenLauncher_TokenLaunched_handler,
+    wildcard: true
+  },
+  ExternalTokenRegistered: {
+    handler: TokenLauncher_ExternalTokenRegistered_handler,
+    wildcard: true
+  }
+};
