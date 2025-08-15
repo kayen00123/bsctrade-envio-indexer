@@ -1,47 +1,18 @@
 /*
  * BSCTrade Token Launchpad Envio Event Handlers
- * Fixed with proper types and BigNumber handling
+ * Minimal working version - just TokenLauncher events
  */
 
 import {
   TokenLauncher_TokenLaunched_event,
   TokenLauncher_ExternalTokenRegistered_event,
-  AMMPool_TokenPurchased_event,
-  AMMPool_TokenSold_event,
-  AMMPool_ReservesSynced_event,
-  LaunchToken_Transfer_event,
-  LaunchToken_Approval_event,
   handlerContext,
 } from "../generated/src/Types.gen";
 
-import {
-  Token_t,
-  Transaction_t,
-  User_t,
-  LaunchpadStats_t,
-} from "../generated/src/db/Entities.gen";
-
-import {
-  TransactionType_t,
-} from "../generated/src/db/Enums.gen";
-
-// Use the exact BigNumber from the generated dependencies
-const BigNumberLib = require("../generated/node_modules/.pnpm/bignumber.js@9.1.2/node_modules/bignumber.js/bignumber");
-
-// Constants  
+// Constants
 const ZERO_BI = 0n;
 const ONE_BI = 1n;
-const ZERO_BD = new BigNumberLib(0);
-
-// Helper to create BigDecimal_t from string or number
-function toBigDecimal(value: string | number | bigint): any {
-  return new BigNumberLib(value.toString());
-}
-
-// Helper to convert bigint to BigDecimal with decimals
-function bigIntToBigDecimal(value: bigint, decimals: number = 18): any {
-  return new BigNumberLib(value.toString()).dividedBy(new BigNumberLib(10).pow(decimals));
-}
+const ZERO_BD = "0";
 
 // Token Launched Handler
 export const TokenLauncher_TokenLaunched_handler = async ({ 
@@ -55,7 +26,7 @@ export const TokenLauncher_TokenLaunched_handler = async ({
   
   console.log(`🚀 Token Launched: ${name} (${symbol}) at ${tokenAddress}`);
   
-  // Create or update user
+  // Create user
   let user = await context.User.get(creator);
   if (!user) {
     const newUser = {
@@ -68,7 +39,6 @@ export const TokenLauncher_TokenLaunched_handler = async ({
       lastTransactionAt: BigInt(event.block.timestamp),
     };
     context.User.set(newUser);
-    user = newUser;
   } else {
     const updatedUser = {
       ...user,
@@ -106,15 +76,15 @@ export const TokenLauncher_TokenLaunched_handler = async ({
   
   context.Token.set(token);
   
-  // Create transaction (simplified without hash for now)
-  const transaction: Transaction_t = {
+  // Create transaction
+  const transaction = {
     id: `${tokenAddress.toLowerCase()}-${event.block.timestamp}-${event.logIndex}`,
-    hash: "0x", // Placeholder - will add proper hash later
+    hash: "0x", // Placeholder
     blockNumber: BigInt(event.block.number),
     timestamp: BigInt(event.block.timestamp),
     token_id: tokenAddress.toLowerCase(),
     user_id: creator,
-    txType: "LAUNCH" as TransactionType_t,
+    txType: "LAUNCH",
     tokenAmount: totalSupply,
     bnbAmount: ZERO_BI,
     tokenAmountUSD: ZERO_BD,
@@ -171,7 +141,7 @@ export const TokenLauncher_ExternalTokenRegistered_handler = async ({
   
   console.log(`📝 External Token Registered: ${name} (${symbol})`);
   
-  // Create or update user (with proper undefined check)
+  // Create user
   let user = await context.User.get(registrar);
   if (!user) {
     const newUser = {
@@ -220,175 +190,6 @@ export const TokenLauncher_ExternalTokenRegistered_handler = async ({
   };
   
   context.Token.set(token);
-};
-
-// AMM Pool Handlers
-export const AMMPool_TokenPurchased_handler = async ({ 
-  event, 
-  context 
-}: {
-  event: AMMPool_TokenPurchased_event;
-  context: handlerContext;
-}) => {
-  const { buyer, tokenAmount, bnbAmount } = event.params;
-  console.log(`💰 Token Purchase: ${tokenAmount} tokens for ${bnbAmount} BNB`);
   
-  // Handle user with proper undefined check
-  let user = await context.User.get(buyer);
-  if (!user) {
-    const newUser = {
-      id: buyer,
-      totalTransactions: ONE_BI,
-      totalVolumeUSD: ZERO_BD,
-      tokensCreated: ZERO_BI,
-      tokensTraded: ONE_BI,
-      firstTransactionAt: BigInt(event.block.timestamp),
-      lastTransactionAt: BigInt(event.block.timestamp),
-    };
-    context.User.set(newUser);
-  } else {
-    const updatedUser = {
-      ...user,
-      totalTransactions: user.totalTransactions + ONE_BI,
-      tokensTraded: user.tokensTraded + ONE_BI,
-      lastTransactionAt: BigInt(event.block.timestamp),
-    };
-    context.User.set(updatedUser);
-  }
-  
-  // Create transaction with all required fields and correct types
-  const transaction: Transaction_t = {
-    id: `${event.srcAddress.toLowerCase()}-${event.block.timestamp}-${event.logIndex}`,
-    hash: "0x", // Placeholder
-    blockNumber: BigInt(event.block.number),
-    timestamp: BigInt(event.block.timestamp),
-    token_id: event.srcAddress.toLowerCase(), // Use contract address as token reference
-    user_id: buyer,
-    txType: "BUY" as TransactionType_t,
-    tokenAmount: tokenAmount,
-    bnbAmount: bnbAmount,
-    tokenAmountUSD: ZERO_BD, // Will calculate later
-    bnbAmountUSD: ZERO_BD,   // Will calculate later
-    priceUSD: ZERO_BD,
-    priceBNB: ZERO_BD,
-    fromToken: ZERO_BI,
-    toToken: tokenAmount,
-    fromAmount: bnbAmount,
-    toAmount: tokenAmount,
-    fromAmountUSD: ZERO_BD,
-    toAmountUSD: ZERO_BD,
-  };
-  
-  context.Transaction.set(transaction);
-};
-
-export const AMMPool_TokenSold_handler = async ({ 
-  event, 
-  context 
-}: {
-  event: AMMPool_TokenSold_event;
-  context: handlerContext;
-}) => {
-  const { seller, tokenAmount, bnbAmount } = event.params;
-  console.log(`💸 Token Sale: ${tokenAmount} tokens for ${bnbAmount} BNB`);
-  
-  // Handle user with proper undefined check
-  let user = await context.User.get(seller);
-  if (!user) {
-    const newUser = {
-      id: seller,
-      totalTransactions: ONE_BI,
-      totalVolumeUSD: ZERO_BD,
-      tokensCreated: ZERO_BI,
-      tokensTraded: ONE_BI,
-      firstTransactionAt: BigInt(event.block.timestamp),
-      lastTransactionAt: BigInt(event.block.timestamp),
-    };
-    context.User.set(newUser);
-  } else {
-    const updatedUser = {
-      ...user,
-      totalTransactions: user.totalTransactions + ONE_BI,
-      tokensTraded: user.tokensTraded + ONE_BI,
-      lastTransactionAt: BigInt(event.block.timestamp),
-    };
-    context.User.set(updatedUser);
-  }
-  
-  // Create transaction
-  const transaction: Transaction_t = {
-    id: `${event.srcAddress.toLowerCase()}-${event.block.timestamp}-${event.logIndex}`,
-    hash: "0x", // Placeholder
-    blockNumber: BigInt(event.block.number),
-    timestamp: BigInt(event.block.timestamp),
-    token_id: event.srcAddress.toLowerCase(), // Use contract address as token reference
-    user_id: seller,
-    txType: "SELL" as TransactionType_t,
-    tokenAmount: tokenAmount,
-    bnbAmount: bnbAmount,
-    tokenAmountUSD: ZERO_BD,
-    bnbAmountUSD: ZERO_BD,
-    priceUSD: ZERO_BD,
-    priceBNB: ZERO_BD,
-    fromToken: tokenAmount,
-    toToken: ZERO_BI,
-    fromAmount: tokenAmount,
-    toAmount: bnbAmount,
-    fromAmountUSD: ZERO_BD,
-    toAmountUSD: ZERO_BD,
-  };
-  
-  context.Transaction.set(transaction);
-};
-
-export const AMMPool_ReservesSynced_handler = async ({ 
-  event, 
-  context 
-}: {
-  event: AMMPool_ReservesSynced_event;
-  context: handlerContext;
-}) => {
-  const { reserveToken, reserveBNB } = event.params;
-  console.log(`🔄 Reserves Synced: ${reserveToken} tokens, ${reserveBNB} BNB`);
-  
-  // Calculate price with BigDecimal
-  if (reserveToken > ZERO_BI) {
-    const reserveTokenBN = bigIntToBigDecimal(reserveToken, 18);
-    const reserveBNBBN = bigIntToBigDecimal(reserveBNB, 18);
-    const price = reserveBNBBN.dividedBy(reserveTokenBN);
-    
-    console.log(`📈 New price: ${price.toString()} BNB per token`);
-    
-    // TODO: Update specific token with new reserves and price
-    // Requires mapping pool address to token address
-  }
-};
-
-// Basic ERC20 handlers
-export const LaunchToken_Transfer_handler = async ({ 
-  event, 
-  context 
-}: {
-  event: LaunchToken_Transfer_event;
-  context: handlerContext;
-}) => {
-  const { from, to, value } = event.params;
-  console.log(`🔄 Token Transfer: ${value} from ${from} to ${to}`);
-  
-  // Basic transfer tracking
-  // TODO: Update holder counts if needed
-};
-
-export const LaunchToken_Approval_handler = async ({ 
-  event, 
-  context 
-}: {
-  event: LaunchToken_Approval_event;
-  context: handlerContext;
-}) => {
-  const { owner, spender, value } = event.params;
-  console.log(`✅ Token Approval: ${owner} approved ${spender} for ${value}`);
-  
-  // Basic approval tracking
-  // TODO: Track approvals for analytics if needed
+  console.log(`✅ External token registered: ${name} (${symbol})`);
 };

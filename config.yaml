@@ -2,35 +2,18 @@
 name: bsc-trade-indexer
 description: BSCTrade Token Launchpad Indexer - High Performance Blockchain Data Indexing
 networks:
-  - id: 97 # BSC Testnet
-    start_block: 43000000 # Recent block to avoid long sync
+  - id: 56 # BSC Mainnet (where your contracts actually are!)
+    start_block: 43000000 # Recent block for mainnet
     rpc_config:
-      url: https://data-seed-prebsc-1-s1.bnbchain.org:8545
+      url: https://bsc-dataseed1.bnbchain.org
     contracts:
-      # Token Launcher Contract
+      # Token Launcher Contract - Main factory contract
       - name: TokenLauncher
         address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
         handler: src/EventHandlers.ts
         events:
           - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
           - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
-
-      # AMM Pool Events (template address - we'll track all instances)
-      - name: AMMPool
-        address: "0x13199E8E9A66A2E373832Af093f736766fDe3ccf"
-        handler: src/EventHandlers.ts
-        events:
-          - event: "TokenPurchased(address indexed buyer, uint256 tokenAmount, uint256 bnbAmount)"
-          - event: "TokenSold(address indexed seller, uint256 tokenAmount, uint256 bnbAmount)"
-          - event: "ReservesSynced(uint256 reserveToken, uint256 reserveBNB)"
-
-      # Launch Token Template (for individual token contracts)  
-      - name: LaunchToken
-        address: "0x48c56b3096E4eD9174B23109472CD8Ab58A653bF"
-        handler: src/EventHandlers.ts
-        events:
-          - event: "Transfer(address indexed from, address indexed to, uint256 value)"
-          - event: "Approval(address indexed owner, address indexed spender, uint256 value)"
 
 # Enable unordered multichain mode for better performance
 unordered_multichain_mode: true
