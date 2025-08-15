@@ -1,20 +1,25 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: bsc-trade-indexer
 description: BSCTrade Token Launchpad Indexer - High Performance Blockchain Data Indexing
+
+# Contract definitions with ABI and events
+contracts:
+  - name: TokenLauncher
+    abi_file_path: ./abis/TokenLauncher.json
+    handler: src/EventHandlers.ts
+    events:
+      - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
+      - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
+
+# Network configurations with contract addresses
 networks:
-  - id: 56 # BSC Mainnet (where your contracts actually are!)
+  - id: 56 # BSC Mainnet
     start_block: 57432438 # Exact block where TokenLauncher was deployed
     rpc_config:
       url: https://bsc-dataseed1.bnbchain.org
     contracts:
-      # Token Launcher Contract - Main factory contract
       - name: TokenLauncher
         address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
-        abi_file_path: ./abis/TokenLauncher.json
-        handler: src/EventHandlers.ts
-        events:
-          - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
-          - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
 
 # Enable unordered multichain mode for better performance
 unordered_multichain_mode: true
