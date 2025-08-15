@@ -1,24 +1,21 @@
-# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+# Minimal Envio config for debugging
 name: bsc-trade-indexer
-description: BSCTrade Token Launchpad Indexer
+description: Minimal BSCTrade indexer test
 
-# Define events normally - wildcard is enabled in handler code
+# Single contract with one event
 contracts:
   - name: TokenLauncher
     abi_file_path: ./abis/TokenLauncher.json
     handler: ./src/Handlers.ts
     events:
       - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
-      - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
 
+# Single network with minimal config
 networks:
-  - id: 56 # BSC Mainnet
-    start_block: 57432400 # Start from contract deployment block
+  - id: 56
+    start_block: 57432400
     rpc_config:
       url: https://dark-cosmological-energy.bsc.quiknode.pro/5ac755b984bd05ad070d861f51bd22196cb9d0ab
     contracts:
       - name: TokenLauncher
         address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
-
-# Basic configuration
-unordered_multichain_mode: false

@@ -1,23 +1,26 @@
 /*
- * Main Handler File - Wildcard mode enabled
- * This enables indexing events from ANY contract on BSC
+ * Minimal Handler File - Just one event for testing
  */
 
 import {
-  TokenLauncher_TokenLaunched_handler,
-  TokenLauncher_ExternalTokenRegistered_handler
-} from './EventHandlers';
+  TokenLauncher_TokenLaunched_event,
+  handlerContext,
+} from "../generated/src/Types.gen";
 
-console.log("🔥 Main Handlers.ts loaded - wildcard mode enabled");
+console.log("🔥 Minimal Handlers.ts loaded");
 
-// Register handlers with wildcard mode
-export const TokenLauncher = {
-  TokenLaunched: {
-    handler: TokenLauncher_TokenLaunched_handler,
-    wildcard: true
-  },
-  ExternalTokenRegistered: {
-    handler: TokenLauncher_ExternalTokenRegistered_handler,
-    wildcard: true
-  }
+// Minimal TokenLaunched handler
+export const TokenLauncher_TokenLaunched_handler = async ({ 
+  event, 
+  context 
+}: {
+  event: TokenLauncher_TokenLaunched_event;
+  context: handlerContext;
+}) => {
+  const { tokenAddress, creator, name, symbol, totalSupply } = event.params;
+  
+  console.log(`🚀 MINIMAL TEST: Token Launched ${name} (${symbol}) at ${tokenAddress}`);
+  
+  // Just log the event - no database operations for now
+  console.log(`✅ Event processed successfully!`);
 };
