@@ -1,4 +1,6 @@
-## Envio ERC20 Template
+## BSCTrade Token Launchpad Envio Indexer
+
+High-performance blockchain data indexer for BSCTrade token launchpad.
 
 *Please refer to the [documentation website](https://docs.envio.dev) for a thorough guide on all [Envio](https://envio.dev) indexer features*
 
