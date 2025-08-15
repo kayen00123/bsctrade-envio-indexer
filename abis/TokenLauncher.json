@@ -1,0 +1,112 @@
+[
+  {
+    "inputs": [
+      {"internalType": "address", "name": "_platformWallet", "type": "address"},
+      {"internalType": "address", "name": "_chainlinkBNBUSD", "type": "address"}
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "token", "type": "address"},
+      {"indexed": true, "internalType": "address", "name": "pool", "type": "address"}
+    ],
+    "name": "AMMCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "creator", "type": "address"},
+      {"indexed": true, "internalType": "address", "name": "token", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "pricePerTokenWei", "type": "uint256"}
+    ],
+    "name": "ExternalTokenRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "creator", "type": "address"},
+      {"indexed": true, "internalType": "address", "name": "token", "type": "address"},
+      {"indexed": true, "internalType": "address", "name": "amm", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "totalSupply", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "pricePerTokenWei", "type": "uint256"}
+    ],
+    "name": "TokenLaunched",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "chainlinkBNBUSD",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBNBUSDPrice",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "token", "type": "address"}],
+    "name": "getPool",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string", "name": "name", "type": "string"},
+      {"internalType": "string", "name": "symbol", "type": "string"},
+      {"internalType": "uint8", "name": "decimals", "type": "uint8"},
+      {"internalType": "uint256", "name": "totalSupply", "type": "uint256"},
+      {"internalType": "uint256", "name": "pricePerTokenWei", "type": "uint256"}
+    ],
+    "name": "launchToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "platformWallet",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "name": "poolOf",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "token", "type": "address"},
+      {"internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+      {"internalType": "uint256", "name": "pricePerTokenWei", "type": "uint256"}
+    ],
+    "name": "registerExternalToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "name": "tokenCreator",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]
