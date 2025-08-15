@@ -2,19 +2,22 @@
 name: bsc-trade-indexer
 description: BSCTrade Token Launchpad Indexer
 
+# Use wildcard mode to index events from any contract
+contracts:
+  - name: TokenLauncher
+    abi_file_path: ./abis/TokenLauncher.json
+    handler: ./src/Handlers.ts
+    events:
+      - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
+        wildcard: true
+      - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
+        wildcard: true
+
 networks:
   - id: 56 # BSC Mainnet
-    start_block: 40000000
+    start_block: 57432400 # Start from contract deployment block
     rpc_config:
       url: https://dark-cosmological-energy.bsc.quiknode.pro/5ac755b984bd05ad070d861f51bd22196cb9d0ab
-    contracts:
-      - name: TokenLauncher
-        address: "0x7203Bb4a16444c4b3c3428952a824BD07Fa544e6"
-        abi_file_path: ./abis/TokenLauncher.json
-        handler: ./src/Handlers.ts
-        events:
-          - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
-          - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
 
 # Basic configuration
 unordered_multichain_mode: false
