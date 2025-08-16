@@ -1,16 +1,7 @@
-# Minimal Envio config for debugging
+# Following exact Envio wildcard example structure
 name: bsc-trade-indexer
-description: Minimal BSCTrade indexer test
+description: BSCTrade Token Launchpad Indexer
 
-# Single contract with one event
-contracts:
-  - name: TokenLauncher
-    abi_file_path: ./abis/TokenLauncher.json
-    handler: ./src/Handlers.ts
-    events:
-      - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
-
-# Single network with minimal config
 networks:
   - id: 56
     start_block: 57432400
@@ -18,3 +9,8 @@ networks:
       url: https://dark-cosmological-energy.bsc.quiknode.pro/5ac755b984bd05ad070d861f51bd22196cb9d0ab
     contracts:
       - name: TokenLauncher
+        abi_file_path: ./abis/TokenLauncher.json
+        handler: ./src/EventHandlers.ts
+        events:
+          - event: "TokenLaunched(address indexed tokenAddress, address indexed creator, string name, string symbol, uint256 totalSupply)"
+          - event: "ExternalTokenRegistered(address indexed tokenAddress, address indexed registrar, string name, string symbol)"
