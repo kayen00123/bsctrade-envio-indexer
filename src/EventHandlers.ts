@@ -1,56 +1,41 @@
 /*
- * BSCTrade Event Handlers - Using Correct Envio API
- * Following the exact pattern from Envio support and docs
+ * BSCTrade Event Handlers - Minimal Version to Get Running
+ * Using correct Envio API and minimal database operations
  */
 
-import { TokenLauncher, User, Token } from "generated";
+import { TokenLauncher } from "generated";
 
-console.log("🔥 EventHandlers.ts loaded - using correct Envio API");
+console.log("🔥 EventHandlers.ts loaded - minimal version");
 
-// Register TokenLaunched handler using the correct API
+// Import BigNumber from Envio's generated bindings
+const BigNumber = require("../generated/node_modules/.pnpm/bignumber.js@9.1.2/node_modules/bignumber.js/bignumber");
+
+// Create BigNumber constants
+const ZERO_BD = new BigNumber(0);
+
+// Register TokenLaunched handler - MINIMAL VERSION
 TokenLauncher.TokenLaunched.handler(async ({ event, context }) => {
   const { tokenAddress, creator, name, symbol, totalSupply } = event.params;
   
-  console.log(`🚀 Token Launched: ${name} (${symbol}) at ${tokenAddress}`);
+  console.log(`🚀 MINIMAL: Token Launched ${name} (${symbol}) at ${tokenAddress}`);
+  console.log(`Creator: ${creator}, Total Supply: ${totalSupply}`);
   
-  // Create user entity
-  const userId = creator;
-  const currentUserEntity = await context.User.get(userId);
-  
-  const userEntity: User = currentUserEntity
-    ? {
-        ...currentUserEntity,
-        tokensCreated: currentUserEntity.tokensCreated + 1n,
-        lastTransactionAt: BigInt(event.block.timestamp),
-      }
-    : {
-        id: userId,
-        totalTransactions: 0n,
-        totalVolumeUSD: "0",
-        tokensCreated: 1n,
-        tokensTraded: 0n,
-        firstTransactionAt: BigInt(event.block.timestamp),
-        lastTransactionAt: BigInt(event.block.timestamp),
-      };
-  
-  context.User.set(userEntity);
-  
-  // Create token entity
-  const tokenEntity: Token = {
+  // Just create token entity with minimal required fields
+  const tokenEntity = {
     id: tokenAddress.toLowerCase(),
     address: tokenAddress.toLowerCase(),
     name: name,
     symbol: symbol,
     decimals: 18,
     totalSupply: totalSupply,
-    currentPrice: "0",
-    priceChange24h: "0", 
-    volume24h: "0",
-    volumeUSD24h: "0",
-    marketCap: "0",
+    currentPrice: ZERO_BD,        // Proper BigNumber
+    priceChange24h: ZERO_BD,      // Proper BigNumber
+    volume24h: ZERO_BD,           // Proper BigNumber
+    volumeUSD24h: ZERO_BD,        // Proper BigNumber
+    marketCap: ZERO_BD,           // Proper BigNumber
     reserveToken: 0n,
     reserveBNB: 0n,
-    liquidity: "0",
+    liquidity: ZERO_BD,           // Proper BigNumber
     creator_id: creator,
     launchedAt: BigInt(event.block.timestamp),
     isActive: true,
@@ -62,43 +47,19 @@ TokenLauncher.TokenLaunched.handler(async ({ event, context }) => {
   };
   
   context.Token.set(tokenEntity);
+  console.log(`✅ MINIMAL: Token created successfully`);
   
-  console.log(`✅ Token processed: ${name} (${symbol})`);
-}, { wildcard: true }); // Enable wildcard mode
+}, { wildcard: true });
 
-// Register ExternalTokenRegistered handler
+// Register ExternalTokenRegistered handler - MINIMAL VERSION
 TokenLauncher.ExternalTokenRegistered.handler(async ({ event, context }) => {
   const { tokenAddress, registrar, name, symbol } = event.params;
   
-  console.log(`📝 External Token Registered: ${name} (${symbol})`);
+  console.log(`📝 MINIMAL: External Token ${name} (${symbol})`);
   
-  // Create external token
-  const tokenEntity: Token = {
-    id: tokenAddress.toLowerCase(),
-    address: tokenAddress.toLowerCase(),
-    name: name,
-    symbol: symbol,
-    decimals: 18,
-    totalSupply: 0n,
-    currentPrice: "0",
-    priceChange24h: "0",
-    volume24h: "0", 
-    volumeUSD24h: "0",
-    marketCap: "0",
-    reserveToken: 0n,
-    reserveBNB: 0n,
-    liquidity: "0",
-    creator_id: registrar,
-    launchedAt: BigInt(event.block.timestamp),
-    isActive: true,
-    ammPoolAddress: undefined,
-    transactionCount: 0n,
-    holderCount: 1n,
-    createdAt: BigInt(event.block.timestamp),
-    updatedAt: BigInt(event.block.timestamp),
-  };
+  // Just log for now - minimal processing
+  console.log(`✅ MINIMAL: External token logged`);
   
-  context.Token.set(tokenEntity);
-  
-  console.log(`✅ External token registered: ${name} (${symbol})`);
-}, { wildcard: true }); // Enable wildcard mode
+}, { wildcard: true });
+
+console.log("🎉 All handlers registered with wildcard mode");
